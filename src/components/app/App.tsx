@@ -7,14 +7,9 @@ import { defaultArticleState } from 'src/constants/articleProps';
 import styles from 'src/styles/index.module.scss';
 
 export const App = () => {
-	const initialArticleState = useRef(defaultArticleState);
 	const [articleState, setArticleState] = useState(defaultArticleState);
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const sidebarRef = useRef<HTMLDivElement>(null);
-
-	const handleReset = () => {
-		setArticleState(initialArticleState.current);
-	};
 
 	useEffect(() => {
 		if (!isFormOpen) return;
@@ -49,10 +44,8 @@ export const App = () => {
 			<ArticleParamsForm
 				ref={sidebarRef}
 				isOpen={isFormOpen}
-				articleState={articleState}
 				onApply={setArticleState}
-				initialArticleState={initialArticleState.current}
-				onReset={handleReset}
+				onClose={() => setIsFormOpen(false)}
 			/>
 			<Article />
 		</main>

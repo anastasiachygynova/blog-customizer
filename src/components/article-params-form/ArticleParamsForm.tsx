@@ -1,5 +1,4 @@
 import { Button } from 'src/ui/button';
-
 import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
 import { Select } from 'src/ui/select';
@@ -12,46 +11,37 @@ import {
 	backgroundColors,
 	contentWidthArr,
 } from 'src/constants/articleProps';
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, forwardRef } from 'react';
 import { Text } from 'src/ui/text';
 import { Separator } from 'src/ui/separator/Separator';
 
 interface Props {
 	isOpen: boolean;
-	articleState: typeof defaultArticleState;
 	onApply: (state: typeof defaultArticleState) => void;
-	initialArticleState: typeof defaultArticleState;
-	onReset: () => void;
+	onClose: () => void;
+	initialArticleState?: typeof defaultArticleState;
 }
 
 export const ArticleParamsForm = forwardRef<HTMLDivElement, Props>(
 	function ArticleParamsForm(
-		{ isOpen, articleState, onApply, initialArticleState, onReset },
+		{ isOpen, onApply, onClose, initialArticleState = defaultArticleState },
 		ref
 	) {
 		const [selectedFontFamily, setSelectedFontFamily] = useState(
-			articleState.fontFamilyOption
+			initialArticleState.fontFamilyOption
 		);
 		const [selectedFontSize, setSelectedFontSize] = useState(
-			articleState.fontSizeOption
+			initialArticleState.fontSizeOption
 		);
 		const [selectedFontColor, setSelectedFontColor] = useState(
-			articleState.fontColor
+			initialArticleState.fontColor
 		);
 		const [selectedBackgroundColors, setSelectedBackgroundColors] = useState(
-			articleState.backgroundColor
+			initialArticleState.backgroundColor
 		);
 		const [selectedContentWidthArr, setSelectedContentWidthArr] = useState(
-			articleState.contentWidth
+			initialArticleState.contentWidth
 		);
-
-		useEffect(() => {
-			setSelectedFontFamily(articleState.fontFamilyOption);
-			setSelectedFontSize(articleState.fontSizeOption);
-			setSelectedFontColor(articleState.fontColor);
-			setSelectedBackgroundColors(articleState.backgroundColor);
-			setSelectedContentWidthArr(articleState.contentWidth);
-		}, [articleState, isOpen]);
 
 		const handleSubmit = (e: React.FormEvent) => {
 			e.preventDefault();
@@ -62,6 +52,7 @@ export const ArticleParamsForm = forwardRef<HTMLDivElement, Props>(
 				backgroundColor: selectedBackgroundColors,
 				contentWidth: selectedContentWidthArr,
 			});
+			onClose();
 		};
 
 		const handleReset = () => {
@@ -70,17 +61,14 @@ export const ArticleParamsForm = forwardRef<HTMLDivElement, Props>(
 			setSelectedFontColor(initialArticleState.fontColor);
 			setSelectedBackgroundColors(initialArticleState.backgroundColor);
 			setSelectedContentWidthArr(initialArticleState.contentWidth);
-			onReset();
+			onApply(initialArticleState);
 		};
 
 		return (
 			<aside
 				ref={ref}
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
-				<form
-					className={styles.form}
-					onSubmit={handleSubmit}
-					onReset={handleReset}>
+				<form className={styles.form} onSubmit={handleSubmit}>
 					<div style={{ marginBottom: 50 }}>
 						<Text size={31} weight={800}>
 							Задайте параметры
@@ -128,8 +116,8 @@ export const ArticleParamsForm = forwardRef<HTMLDivElement, Props>(
 					</div>
 
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
-						<Button title='Применить' htmlType='submit' type='apply' />
+						<Button title='Сбросить' onClick={handleReset} type='clear' />
+						<Button title='Применить' type='apply' htmlType='submit' />
 					</div>
 				</form>
 			</aside>
